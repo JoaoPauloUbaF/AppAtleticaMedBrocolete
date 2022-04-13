@@ -1,7 +1,9 @@
 import { useNavigation } from '@react-navigation/core'
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { auth } from '../firebase'
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground } from 'react-native'
+import { auth } from '../../firebase'
+
+const ImagemFundo = '../assets/fundo.png'
 
 const HomeScreen = () => {
   const navigation = useNavigation()
@@ -16,7 +18,7 @@ const HomeScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ImageBackground style={styles.container} source={require(ImagemFundo)}>
       <Text>Email: {auth.currentUser?.email}</Text>
       <TouchableOpacity
         onPress={handleSignOut}
@@ -24,7 +26,7 @@ const HomeScreen = () => {
       >
         <Text style={styles.buttonText}>Sign out</Text>
       </TouchableOpacity>
-    </View>
+    </ImageBackground>
   )
 }
 
@@ -32,9 +34,11 @@ export default HomeScreen
 
 const styles = StyleSheet.create({
   container: {
+    height: '100%',
+    width: '100%',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
    button: {
     backgroundColor: '#0782F9',

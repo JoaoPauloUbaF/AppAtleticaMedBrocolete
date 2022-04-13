@@ -1,8 +1,13 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
-import React, {useState,useEffect} from 'react'
-import { auth } from '../firebase';
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, ImageBackground, Platform, Dimensions, Image  } from 'react-native'
+import React, {useState,useEffect,} from 'react'
+import { auth } from '../../firebase';
 import {createUserWithEmailAndPassword,signInWithEmailAndPassword} from 'firebase/auth'
 import { useNavigation } from '@react-navigation/core'
+
+const ImagemFundo = '../assets/fundo.png'
+const Logo = '../assets/logomedalfenas.png'
+const MA = '../assets/MA.png'
+const Mascote01 = '../assets/mascotinho01.png'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -26,7 +31,6 @@ const LoginScreen = () => {
       createUserWithEmailAndPassword(auth,email,password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user.email);
       })
       .catch(error => alert(error.message))
   }
@@ -35,22 +39,28 @@ const LoginScreen = () => {
       signInWithEmailAndPassword(auth,email, password)
       .then(userCredentials => {
         const user = userCredentials.user;
-        console.log('Logged in with:', user.email);
       })
       .catch(error => alert(error.message))
   }
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
+    style={styles.container}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+    <ImageBackground style={styles.imgContainer} source={require(ImagemFundo)}>
+        <Image
+        source={require(Logo)}
+        style={styles.logoContainer}
+        />
+        
       <View style={styles.inputContainer}>
         <TextInput
         placeholder="Email"
         value={email}
-        onChangeText={value => setEmail(value)}
+        onChangeText={value => setEmail(value.replace(/ /g, ''))}
         style={styles.input}
+        autoComplete={'email'}
         />
 
         <TextInput
@@ -59,6 +69,7 @@ const LoginScreen = () => {
         onChangeText={value => setPassword(value)}
         style={styles.input}
         secureTextEntry
+        maxLength={8}
         />  
       </View>
 
@@ -66,16 +77,30 @@ const LoginScreen = () => {
         <TouchableOpacity
           onPress = {( ) => handleLogin()}
           style={styles.button}
-        >
+          >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress = {() => handleSignUp()}
           style={[styles.button, styles.buttonOutline]}
-        >
+          
+          > 
           <Text style={styles.buttonOutlineText}>Registrar</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
+
+      <View style={styles.bottomContainer}>
+      <Image
+        source={require(Mascote01)}
+        style={styles.bottomImg}
+        />
+      <Image
+        source={require(MA)}
+        style={styles.bottomLogo}
+      />
+      </View>  
+
+    </ImageBackground>  
     </KeyboardAvoidingView>
   )
 }
@@ -88,9 +113,28 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center',
   },
-
+  imgContainer: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent:'flex-start',
+    alignItems:'center',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: Dimensions.get('screen').width,
+    height: Dimensions.get('screen').height,
+  },
+  logoContainer:{
+    width:'40%',
+    height: '20%',
+    resizeMode: 'stretch',
+    marginTop: 100,
+    marginBottom: 30,
+    paddingVertical: 10,
+  },
   inputContainer:{
-    width:'80%'
+    width:'80%',
+    
   },
   input:{
     backgroundColor: 'white',
@@ -127,5 +171,31 @@ const styles = StyleSheet.create({
     color:'#0782F9',
     fontWeight: '700',
     fontSize: 16,
+  },
+  bottomContainer:{
+    flex: 1,
+    width:'100%',
+    flexDirection: 'row',
+    height: '50%',
+    resizeMode: 'stretch',
+    marginTop: 20,
+    paddingVertical: 10,
+    alignItems:'flex-end',
+    justifyContent: 'flex-start',
+  },
+  bottomImg:{
+    width:'40%',
+    height: '90%',
+    resizeMode: 'stretch',
+    alignSelf: "flex-start",
+    
+  },
+  bottomLogo:{
+    width:'20%',
+    height: '20%',
+    resizeMode: 'stretch',
+    marginTop: 20,
+    marginBottom: 40,
+    paddingVertical: 10,
   },
 })
