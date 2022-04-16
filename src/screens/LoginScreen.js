@@ -4,10 +4,10 @@ import { auth } from '../../firebase';
 import {createUserWithEmailAndPassword,signInWithEmailAndPassword} from 'firebase/auth'
 import { useNavigation } from '@react-navigation/core'
 
-const ImagemFundo = '../assets/fundo.png'
-const Logo = '../assets/logomedalfenas.png'
-const MA = '../assets/MA.png'
-const Mascote01 = '../assets/mascotinho01.png'
+import ImagemFundo from '../assets/fundo.png'
+import Logo  from '../assets/logomedalfenas.png'
+import MA  from '../assets/MA.png'
+import Mascote01 from '../assets/mascotinho01.png'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -48,9 +48,9 @@ const LoginScreen = () => {
     style={styles.container}
     behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-    <ImageBackground style={styles.imgContainer} source={require(ImagemFundo)}>
+    <ImageBackground style={styles.imgContainer} source={ImagemFundo}>
         <Image
-        source={require(Logo)}
+        source={Logo}
         style={styles.logoContainer}
         />
         
@@ -91,11 +91,11 @@ const LoginScreen = () => {
 
       <View style={styles.bottomContainer}>
       <Image
-        source={require(Mascote01)}
+        source={Mascote01}
         style={styles.bottomImg}
         />
       <Image
-        source={require(MA)}
+        source={MA}
         style={styles.bottomLogo}
       />
       </View>  
