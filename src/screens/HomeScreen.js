@@ -1,17 +1,36 @@
 import { useNavigation } from '@react-navigation/core'
-import React from 'react'
+import React, {useState,useEffect,} from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
-import { auth } from '../../firebase'
-
+import { auth, db } from '../../firebase'
 import ImagemFundo from '../assets/fundo.png'
 import mascotinho03 from '../assets/mascotinho03.png'
 import mascotinho04 from '../assets/mascotinho04.png'
 import mascotinho07 from '../assets/mascotinho07.png'
 import botaoverde from '../assets/botaoverde.png'
 import botaovermelho from '../assets/botaovermelho.png'
+import MA from '../assets/MA.png'
+
 
 const HomeScreen = () => {
+  const [userName, setUserName] = useState('')
+  const [DataFinal, setUserDataFinal] = useState('')
+  const [userTurma, setUserTurma] = useState('')
+
   const navigation = useNavigation()
+
+  async function getUser(db){
+    const user = db.collection('users').doc(auth.currentUser.uid);
+    const doc = await user.get();
+    if(!doc.exists){
+      console.log('n deu');
+    } else {
+      console.log('data: ', doc.data());
+    }
+  }
+  
+  useEffect(() => {
+    getUser(db)
+  }, [])
 
   const handleSignOut = () => {
     auth
@@ -22,12 +41,13 @@ const HomeScreen = () => {
       .catch(error => alert(error.message))
   }
 
+
+
   return (
     <View style={styles.container}>
     <ImageBackground style={styles.imgContainer} source={ImagemFundo}>
     <View style={styles.topContainer}>
-      <Image
-        source={mascotinho07}
+      <View
         style={styles.bottomImg}
       />
       <Image
@@ -35,46 +55,57 @@ const HomeScreen = () => {
         style={styles.bottomImg}
       />
     </View>  
-      
-      <Text>Nome:</Text>
-      <Text>{auth.currentUser?.email}</Text>
-      <Text>Turma:</Text>
-      <Text>{auth.currentUser?.email}</Text>
-      <Text>Data final da associação:</Text>
-      <Text>{auth.currentUser?.email}</Text>
-      <Text>Estado da associação</Text>
 
-      <View style={styles.buttonsContainer}>
+    <View style={styles.infoContainer}>
+      <Text style={styles.text}>Nome</Text>
+      <Text style={styles.text}>{auth.currentUser?.Name}</Text>
+      <Text style={styles.text}>Turma</Text>
+      <Text style={styles.text}>{auth.currentUser?.email}</Text>
+      <Text style={styles.text}>Data final da associação</Text>
+      <Text style={styles.text}>{auth.currentUser?.email}</Text>
+    </View>
+
+      <Text style={styles.text}>Estado da associação</Text>
+
+    <View style={styles.statusContainer}>
       <Image
         source={botaoverde}
-        style={styles.bottomImg}
+        style={styles.statusImg}
       />
       <Image
         source={botaovermelho}
-        style={styles.bottomImg}
+        style={styles.statusImg}
       />
     </View>
-    <TouchableOpacity
-        onPress={handleSignOut}
-        style={styles.button}
-        >
-        <Text style={styles.buttonText}>Sign out</Text>
-    </TouchableOpacity>
 
-    <TouchableOpacity
+    <View style={styles.linksContainer}>
+      <View style={styles.linkContainer}>
+        <Image source={mascotinho04} style={styles.buttonImg}/>
+         <TouchableOpacity
         onPress={handleSignOut}
-        style={styles.button}
+        style={styles.lojinha}
         >
-        <Text style={styles.buttonText}>Sign out</Text>
-    </TouchableOpacity> 
-
-    <TouchableOpacity
-        onPress={handleSignOut}
-        style={styles.button}
+        <Text style={styles.buttonText}>LOJINHA</Text>
+        </TouchableOpacity>
+      </View>
+    
+      <View style={styles.linkContainer}>
+        <TouchableOpacity
+          onPress={handleSignOut}
+          style={styles.parceiros}
         >
-        <Text style={styles.buttonText}>Sign out</Text>
-    </TouchableOpacity>
+          <Text style={styles.buttonText}>PARCEIROS</Text>
+        </TouchableOpacity>
+        <Image source={mascotinho07} style={styles.buttonImg}/>
+      </View>
+    <Image
+        source={MA}
+        style={styles.bottomLogo}
+    />
+    </View>
 
+    
+     
     </ImageBackground>
   </View>
   )
@@ -91,12 +122,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
    button: {
-    backgroundColor: '#0782F9',
+    backgroundColor: '#FFCC00',
+    width: '60%',
+    height: '100%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    marginLeft: -40,
+    marginRight: -40,
+  },
+  lojinha: {
+    backgroundColor: '#FFCC00',
+    width: '60%',
+    height: '100%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    marginLeft: -40,
+  },
+ 
+  parceiros: {
+    backgroundColor: '#FFCC00',
+    width: '60%',
+    height: '100%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    marginRight: -40,
+  },
+  linkButton: {
+    backgroundColor: '#FFCC00',
     width: '60%',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 20,
+  },
+  text:{
+    color:'#FFCC00',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   buttonText: {
     color: 'white',
@@ -119,15 +187,33 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'stretch',
     alignSelf: "flex-start",
-    
+  },
+  buttonImg:{
+    width:  70,
+    height: 100,
+    resizeMode: 'contain',
+    alignSelf: "flex-start",
+    zIndex: 3, // works on ios
+    //elevation: 3,
+  },
+  statusImg:{
+    width:'45%',
+    height: '100%',
+    resizeMode: 'stretch',
+    alignSelf: "flex-start",
   },
   bottomLogo:{
-    width:'20%',
-    height: '20%',
+    width: 70,
+    height: 70,
     resizeMode: 'stretch',
     marginTop: 20,
     marginBottom: 40,
-    paddingVertical: 10,
+    alignSelf:'center'
+  },
+  infoContainer:{
+    alignSelf:'flex-start',
+    paddingLeft: 30,
+    paddingVertical: 20,
   },
   topContainer:{
     width:'100%',
@@ -142,8 +228,26 @@ const styles = StyleSheet.create({
     width:'100%',
     flexDirection: 'row',
     height: '5%',
-    marginTop: 20,
+    marginTop: 10,
+    //justifyContent: 'center',
+    alignItems:'flex-start',
+  },
+  statusContainer:{
+    width:'100%',
+    height: '5%',
+    flexDirection: 'row',
+    marginTop: 10,
     justifyContent: 'center',
+    alignItems:'flex-start',
+  },
+  linkContainer:{
+    width:'100%',
+    flexDirection: 'row',
+    height: 60,
+    marginTop: 10,
+    marginVertical:20,
+    justifyContent: 'center',
+    alignItems:'flex-start',
   },
   logoContainer:{
     width:'40%',
@@ -153,4 +257,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     paddingVertical: 10,
   },
+  linksContainer:{
+    alignSelf:'flex-start',
+    paddingLeft: 30,
+    paddingVertical: 20,
+  }
 })
