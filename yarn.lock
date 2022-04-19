@@ -1823,7 +1823,7 @@
     "sudo-prompt" "^9.0.0"
     "wcwidth" "^1.0.1"
 
-"@react-native-firebase/app@14.7.0":
+"@react-native-firebase/app@^14.7.0", "@react-native-firebase/app@14.7.0":
   "integrity" "sha512-/TdFv0L4AOEdKbAqmUu0yDXWq0Viw9sEX5mprPQDQbnctEJVwDLWehJkKx2CMiGeZox7VU2cshBLD0AC82XTtQ=="
   "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-14.7.0.tgz"
   "version" "14.7.0"

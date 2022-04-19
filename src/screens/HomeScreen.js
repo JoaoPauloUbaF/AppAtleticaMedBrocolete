@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core'
 import React, {useState,useEffect,} from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
-import { auth, db } from '../../firebase'
+import { auth, getDoc, doc, db } from '../../firebase'
 import ImagemFundo from '../assets/fundo.png'
 import mascotinho03 from '../assets/mascotinho03.png'
 import mascotinho04 from '../assets/mascotinho04.png'
@@ -15,22 +15,24 @@ const HomeScreen = () => {
   const [userName, setUserName] = useState('')
   const [DataFinal, setUserDataFinal] = useState('')
   const [userTurma, setUserTurma] = useState('')
+  const user = doc(db, 'users/'+ auth.currentUser.uid);
 
-  const navigation = useNavigation()
-
-  async function getUser(db){
-    const user = db.collection('users').doc(auth.currentUser.uid);
-    const doc = await user.get();
-    if(!doc.exists){
-      console.log('n deu');
-    } else {
-      console.log('data: ', doc.data());
-    }
-  }
   
-  useEffect(() => {
-    getUser(db)
-  }, [])
+  const navigation = useNavigation()
+  async function read(){
+    const mySnapshot = await getDoc(user);
+    if(mySnapshot.exists()){
+        const userData = mySnapshot.data();
+        setUserName(userData.Name)
+        setUserDataFinal(userData.DataFinalAssociacao)
+        setUserTurma(userData.Turma)
+    }
+
+}useEffect(() => {
+  read();
+}, [])
+
+  
 
   const handleSignOut = () => {
     auth
@@ -58,11 +60,11 @@ const HomeScreen = () => {
 
     <View style={styles.infoContainer}>
       <Text style={styles.text}>Nome</Text>
-      <Text style={styles.text}>{auth.currentUser?.Name}</Text>
+      <Text style={styles.text}>{userName}</Text>
       <Text style={styles.text}>Turma</Text>
-      <Text style={styles.text}>{auth.currentUser?.email}</Text>
+      <Text style={styles.text}>{userTurma}</Text>
       <Text style={styles.text}>Data final da associação</Text>
-      <Text style={styles.text}>{auth.currentUser?.email}</Text>
+      <Text style={styles.text}>{DataFinal}</Text>
     </View>
 
       <Text style={styles.text}>Estado da associação</Text>
@@ -98,6 +100,9 @@ const HomeScreen = () => {
         </TouchableOpacity>
         <Image source={mascotinho07} style={styles.buttonImg}/>
       </View>
+
+      
+
     <Image
         source={MA}
         style={styles.bottomLogo}
