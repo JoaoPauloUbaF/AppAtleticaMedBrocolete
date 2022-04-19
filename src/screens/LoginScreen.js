@@ -15,15 +15,15 @@ const LoginScreen = () => {
 
   const navigation = useNavigation()
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
-        navigation.replace("Home")
-      }
-    })
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged(user => {
+  //     if (user) {
+  //       navigation.replace("Home")
+  //     }
+  //   })
 
-    return unsubscribe
-  }, [])
+  //   return unsubscribe
+  // }, [])
 
 
   const handleSignUp = () => {
@@ -39,6 +39,7 @@ const LoginScreen = () => {
       signInWithEmailAndPassword(auth,email, password)
       .then(userCredentials => {
         const user = userCredentials.user;
+        navigation.replace("Home");
       })
       .catch(error => alert(error.message))
   }

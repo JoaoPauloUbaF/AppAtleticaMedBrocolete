@@ -9,7 +9,7 @@ import {LogBox} from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
-//LogBox.ignoreAllLogs();
+LogBox.ignoreAllLogs();
 
 export default function App() {
   return (

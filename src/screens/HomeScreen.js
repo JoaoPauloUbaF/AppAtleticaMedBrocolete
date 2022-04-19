@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/core'
 import React, {useState,useEffect,} from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
+import { StyleSheet, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
 import { auth, getDoc, doc, db } from '../../firebase'
+
 import ImagemFundo from '../assets/fundo.png'
 import mascotinho03 from '../assets/mascotinho03.png'
 import mascotinho04 from '../assets/mascotinho04.png'
 import mascotinho07 from '../assets/mascotinho07.png'
 import botaoverde from '../assets/botaoverde.png'
-import botaovermelho from '../assets/botaovermelho.png'
 import MA from '../assets/MA.png'
 
 
@@ -15,23 +15,61 @@ const HomeScreen = () => {
   const [userName, setUserName] = useState('')
   const [DataFinal, setUserDataFinal] = useState('')
   const [userTurma, setUserTurma] = useState('')
-  const user = doc(db, 'users/'+ auth.currentUser.uid);
-
+  const [userAssociado, setUserAssociado] = useState()
+  const [dataVencimento, setDataVencimento] = useState(new Date());
   
+  const user = doc(db, 'users/'+ auth.currentUser.uid);
+  const dataAtual = new Date();
+  
+
   const navigation = useNavigation()
-  async function read(){
+
+  async function readUserData(){
     const mySnapshot = await getDoc(user);
     if(mySnapshot.exists()){
         const userData = mySnapshot.data();
         setUserName(userData.Name)
         setUserDataFinal(userData.DataFinalAssociacao)
         setUserTurma(userData.Turma)
+                 
     }
+  }
 
-}useEffect(() => {
-  read();
-}, [])
+  useEffect(() => {
+    readUserData();
+    conversorData();
+  }, [])
+  
 
+  useEffect(() => {  
+    comparaDatas();  
+    if(userAssociado === false){
+      createAlert();
+    }  
+  }, [dataVencimento])
+  
+  const createAlert = () =>
+    Alert.alert(
+      "Associação vencida",
+      "Procure a atlética!",
+      [
+        { text: "OK", onPress: () => navigation.replace("Login")}
+      ]
+  );
+  
+  function conversorData(){
+    const [day, month, year] = DataFinal.split('/');
+    const result = [year, month, day].join('-');
+    const data = new Date(result);
+    setDataVencimento(data);
+  }
+
+  function comparaDatas(){
+    if (dataAtual.getTime() >= dataVencimento.getTime()){
+      setUserAssociado(true);
+    }
+  }
+  
   
 
   const handleSignOut = () => {
@@ -46,11 +84,14 @@ const HomeScreen = () => {
 
 
   return (
-    <View style={styles.container}>
+  <View style={styles.container}>
     <ImageBackground style={styles.imgContainer} source={ImagemFundo}>
     <View style={styles.topContainer}>
       <View
         style={styles.bottomImg}
+      />
+      <View
+        style={styles.userImg}
       />
       <Image
         source={mascotinho03}
@@ -67,50 +108,51 @@ const HomeScreen = () => {
       <Text style={styles.text}>{DataFinal}</Text>
     </View>
 
-      <Text style={styles.text}>Estado da associação</Text>
 
     <View style={styles.statusContainer}>
+    <Text style={styles.text}>Estado da associação</Text>
       <Image
         source={botaoverde}
         style={styles.statusImg}
       />
-      <Image
-        source={botaovermelho}
-        style={styles.statusImg}
-      />
     </View>
 
-    <View style={styles.linksContainer}>
-      <View style={styles.linkContainer}>
-        <Image source={mascotinho04} style={styles.buttonImg}/>
-         <TouchableOpacity
-        onPress={handleSignOut}
-        style={styles.lojinha}
-        >
-        <Text style={styles.buttonText}>LOJINHA</Text>
-        </TouchableOpacity>
-      </View>
-    
-      <View style={styles.linkContainer}>
+    <View style={styles.buttonContainer}>
+      <Image source={mascotinho04} 
+      style={[styles.buttonImg, 
+      {position:'absolute',
+        left:-30,
+        top: -30,
+      }]}/>
         <TouchableOpacity
-          onPress={handleSignOut}
-          style={styles.parceiros}
-        >
+          onPress = {( ) => handleSignOut()}
+          style={styles.button}
+          >
+          <Text style={styles.buttonText}>LOJINHA</Text>
+        </TouchableOpacity>
+    </View>
+
+    <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress = {( ) => handleSignOut()}
+          style={styles.button}
+          >
           <Text style={styles.buttonText}>PARCEIROS</Text>
         </TouchableOpacity>
-        <Image source={mascotinho07} style={styles.buttonImg}/>
-      </View>
-
-      
-
-    <Image
-        source={MA}
-        style={styles.bottomLogo}
-    />
+        <Image source={mascotinho07} style={[styles.buttonImg, 
+      {position:'absolute',
+        right:-30,
+        top: -30,
+      }]}/>
     </View>
 
-    
-     
+    <View style={styles.logoContainer}>
+      <Image
+          source={MA}
+          style={styles.bottomLogo}
+          />
+    </View> 
+ 
     </ImageBackground>
   </View>
   )
@@ -126,56 +168,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-   button: {
-    backgroundColor: '#FFCC00',
-    width: '60%',
-    height: '100%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-    marginLeft: -40,
-    marginRight: -40,
-  },
-  lojinha: {
-    backgroundColor: '#FFCC00',
-    width: '60%',
-    height: '100%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-    marginLeft: -40,
-  },
- 
-  parceiros: {
-    backgroundColor: '#FFCC00',
-    width: '60%',
-    height: '100%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-    marginRight: -40,
-  },
-  linkButton: {
-    backgroundColor: '#FFCC00',
-    width: '60%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  text:{
-    color:'#FFCC00',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 16,
-  },
   imgContainer: {
     flex: 1,
     resizeMode: 'cover',
@@ -187,11 +179,54 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width,
     height: Dimensions.get('screen').height,
   },
+  topContainer:{
+    width:'100%',
+    flexDirection: 'row',
+    height: '20%',
+    marginTop: '10%',
+    alignItems:'center',
+    justifyContent: 'center',
+  },
+  userImg:{
+    height: '100%',
+    width: '35%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+  },
   bottomImg:{
-    width:'40%',
+    width:'30%',
     height: '100%',
     resizeMode: 'stretch',
     alignSelf: "flex-start",
+  },
+  infoContainer:{
+    alignSelf:'flex-start',
+    width: '100%',
+    height: '20%',
+    paddingLeft: 30,
+    marginTop:'5%',
+  },
+  text:{
+    color:'#FFCC00',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  statusContainer:{
+    width:'100%',
+    height: '10%',
+    justifyContent: 'center',
+    alignItems:'center',
+  },
+  statusImg:{
+    width:'80%',
+    height: '70%',
+    resizeMode: 'stretch',
+    marginTop: '2%',
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 16,
   },
   buttonImg:{
     width:  70,
@@ -201,70 +236,55 @@ const styles = StyleSheet.create({
     zIndex: 3, // works on ios
     //elevation: 3,
   },
-  statusImg:{
-    width:'45%',
-    height: '100%',
+  buttonContainer:{
+    flexDirection: 'row',
+    width:'60%',
+    height: '7%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: "10%",
+  },
+  button:{
+    width: '100%',
+    backgroundColor: '#0782F9',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    position: 'absolute',
+    left:0,
+    top:0,
+  },
+  buttonOutline:{
+    backgroundColor: 'white',
+    marginTop: 5,
+    borderColor: '#0782F9',
+    borderWidth: 2,
+  },
+  buttonText:{
+    color:'white',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  buttonOutlineText:{
+    color:'#0782F9',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  logoContainer:{
+    width:'100%',
+    height: '10%',
     resizeMode: 'stretch',
-    alignSelf: "flex-start",
+    marginTop: '5%',
+    marginBottom: '5%',
+    justifyContent: 'center',
+    position: 'absolute',
+    left: '0%',
+    bottom: '0%',
   },
   bottomLogo:{
     width: 70,
     height: 70,
     resizeMode: 'stretch',
-    marginTop: 20,
-    marginBottom: 40,
-    alignSelf:'center'
+    alignSelf:'center',
   },
-  infoContainer:{
-    alignSelf:'flex-start',
-    paddingLeft: 30,
-    paddingVertical: 20,
-  },
-  topContainer:{
-    width:'100%',
-    flexDirection: 'row',
-    height: '20%',
-    marginTop: 70,
-    marginLeft: 70,
-    alignItems:'center',
-    justifyContent: 'center',
-  },
-  buttonsContainer:{
-    width:'100%',
-    flexDirection: 'row',
-    height: '5%',
-    marginTop: 10,
-    //justifyContent: 'center',
-    alignItems:'flex-start',
-  },
-  statusContainer:{
-    width:'100%',
-    height: '5%',
-    flexDirection: 'row',
-    marginTop: 10,
-    justifyContent: 'center',
-    alignItems:'flex-start',
-  },
-  linkContainer:{
-    width:'100%',
-    flexDirection: 'row',
-    height: 60,
-    marginTop: 10,
-    marginVertical:20,
-    justifyContent: 'center',
-    alignItems:'flex-start',
-  },
-  logoContainer:{
-    width:'40%',
-    height: '20%',
-    resizeMode: 'stretch',
-    marginTop: 100,
-    marginBottom: 30,
-    paddingVertical: 10,
-  },
-  linksContainer:{
-    alignSelf:'flex-start',
-    paddingLeft: 30,
-    paddingVertical: 20,
-  }
 })
