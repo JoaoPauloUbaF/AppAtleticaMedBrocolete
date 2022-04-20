@@ -1,5 +1,5 @@
 import { StyleSheet, Switch, Text, View, SafeAreaView , TextInput, TouchableOpacity, ImageBackground, Platform, Dimensions, Image, ScrollView  } from 'react-native'
-import React, {useState,useEffect,} from 'react'
+import React, {useState} from 'react'
 import { auth, db } from '../../firebase'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { setDoc, doc } from 'firebase/firestore';
@@ -16,7 +16,6 @@ const SignUpScreen = () => {
   const [DataFinal, setUserDataFinal] = useState('')
   const [userTurma, setUserTurma] = useState('')
   const [userAdm, setUserAdm] = useState(false);
-  const [usuario,setUsuario] = useState()
   const navigation = useNavigation()
 
 

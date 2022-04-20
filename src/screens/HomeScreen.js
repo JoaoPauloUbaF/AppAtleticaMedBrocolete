@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/core'
 import React, {useState,useEffect,} from 'react'
-import { StyleSheet, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
-import { auth, getDoc, doc, db } from '../../firebase'
+import { StyleSheet, Button, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
+import { auth, getDoc, doc, db, storage, uploadBytesResumable, ref } from '../../firebase'
+import * as ImagePicker from 'expo-image-picker';
 
 import ImagemFundo from '../assets/fundo.png'
 import mascotinho03 from '../assets/mascotinho03.png'
@@ -15,13 +16,15 @@ const HomeScreen = () => {
   const [userName, setUserName] = useState('')
   const [DataFinal, setUserDataFinal] = useState()
   const [userTurma, setUserTurma] = useState('')
-  const [userAssociado, setUserAssociado] = useState()
-  const [dataVencimento, setDataVencimento] = useState();
   const [userAdm, setUserAdm] = useState(false);
+  const [userPhotoUri, setUserPhotoUri] = useState();
+  const [userPhoto, setUserPhoto] = useState();
 
   const user = doc(db, 'users/'+ auth.currentUser.uid);
   const dataAtual = new Date();
-  
+  const metadata = {
+    contentType: 'image/jpeg'
+  };
 
   const navigation = useNavigation()
 
@@ -33,6 +36,7 @@ const HomeScreen = () => {
         setUserDataFinal(userData.DataFinalAssociacao)
         setUserTurma(userData.Turma)
         setUserAdm(userData.Administrador)
+        setUserPhoto()
     }
   }
 
@@ -43,7 +47,27 @@ const HomeScreen = () => {
     });
   }, [DataFinal])
   
-  
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+
+    if (!result.cancelled) {
+      setUserPhoto(result.uri);
+      setUserPhotoUri(result.uri);
+      var path = auth.currentUser.uid + '/' + userName + '.jpg';
+      console.log(path);
+      console.log(result.uri);
+      const storageRef = ref(storage, path);
+      const uploadTask = uploadBytesResumable(storageRef, result.uri, metadata);
+    }
+  };
+
   const createAlert = () =>
     Alert.alert(
       "Associação vencida",
@@ -83,7 +107,12 @@ const HomeScreen = () => {
       />
       <View
         style={styles.userImg}
-      />
+      > 
+        {!userPhoto ? (
+          <Button title="Carregar Foto" onPress={pickImage}/>
+        ) : <Image source={{ uri: userPhoto }} style={{ width: '100%', height: '100%' }} />}
+
+      </View>
       <Image
         source={mascotinho03}
         style={styles.bottomImg}
@@ -192,6 +221,8 @@ const styles = StyleSheet.create({
   userImg:{
     height: '100%',
     width: '35%',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#fff',
     borderRadius: 10,
   },
@@ -251,6 +282,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#0782F9',
     padding: 20,
     borderRadius: 10,
+    alignItems: 'center',
+    position: 'absolute',
+    left:0,
+    top:0,
+  },
+  buttonCamera:{
+    width: 50,
+    height: 50,
+    backgroundColor: '#000000',
+    padding: 20,
+    borderRadius: 50,
     alignItems: 'center',
     position: 'absolute',
     left:0,
