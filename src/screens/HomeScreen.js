@@ -16,8 +16,9 @@ const HomeScreen = () => {
   const [DataFinal, setUserDataFinal] = useState('')
   const [userTurma, setUserTurma] = useState('')
   const [userAssociado, setUserAssociado] = useState()
-  const [dataVencimento, setDataVencimento] = useState(new Date());
-  
+  const [dataVencimento, setDataVencimento] = useState();
+  const [userAdm, setUserAdm] = useState(false);
+
   const user = doc(db, 'users/'+ auth.currentUser.uid);
   const dataAtual = new Date();
   
@@ -31,21 +32,21 @@ const HomeScreen = () => {
         setUserName(userData.Name)
         setUserDataFinal(userData.DataFinalAssociacao)
         setUserTurma(userData.Turma)
-                 
+        setUserAdm(userData.Administrador)
+        console.log(DataFinal)
     }
   }
 
   useEffect(() => {
     readUserData();
     conversorData();
-  }, [])
+  }, [userName])
   
+  
+  useEffect(() => { 
+    //comparaDatas();  
+    conversorData();
 
-  useEffect(() => {  
-    comparaDatas();  
-    if(userAssociado === false){
-      createAlert();
-    }  
   }, [dataVencimento])
   
   const createAlert = () =>
@@ -61,12 +62,14 @@ const HomeScreen = () => {
     const [day, month, year] = DataFinal.split('/');
     const result = [year, month, day].join('-');
     const data = new Date(result);
-    setDataVencimento(data);
+    return data;
   }
 
   function comparaDatas(){
-    if (dataAtual.getTime() >= dataVencimento.getTime()){
-      setUserAssociado(true);
+    console.log(dataAtual);
+    if (dataAtual.getTime() > dataVencimento.getTime()){
+      createAlert();
+      console.log('vencido');
     }
   }
   
@@ -152,6 +155,17 @@ const HomeScreen = () => {
           style={styles.bottomLogo}
           />
     </View> 
+
+   {userAdm ? 
+    (<View style={styles.subscribeContainer}>
+    <TouchableOpacity
+    onPress = {( ) => handleSignOut()}
+    style={styles.registerButton}
+    >
+          <Text style={styles.registerButtonText}>Cadastro</Text>
+    </TouchableOpacity>
+    </View> ) : null} 
+
  
     </ImageBackground>
   </View>
@@ -286,5 +300,33 @@ const styles = StyleSheet.create({
     height: 70,
     resizeMode: 'stretch',
     alignSelf:'center',
+  },
+  subscribeContainer:{
+    width:'100%',
+    height: '10%',
+    resizeMode: 'stretch',
+    marginTop: '5%',
+    marginBottom: '5%',
+    justifyContent: 'center',
+    position: 'absolute',
+    left: '75%',
+    bottom: '0%',
+  },
+  registerButton:{
+    width: 70,
+    height: 70,
+    backgroundColor: 'green',
+    padding: 10,
+    borderRadius: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    left:0,
+    top:0,
+  },
+  registerButtonText:{
+    color:'white',
+    fontWeight: '700',
+    fontSize: 12,
   },
 })
