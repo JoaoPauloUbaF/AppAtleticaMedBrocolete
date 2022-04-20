@@ -13,7 +13,7 @@ import MA from '../assets/MA.png'
 
 const HomeScreen = () => {
   const [userName, setUserName] = useState('')
-  const [DataFinal, setUserDataFinal] = useState('')
+  const [DataFinal, setUserDataFinal] = useState()
   const [userTurma, setUserTurma] = useState('')
   const [userAssociado, setUserAssociado] = useState()
   const [dataVencimento, setDataVencimento] = useState();
@@ -33,21 +33,16 @@ const HomeScreen = () => {
         setUserDataFinal(userData.DataFinalAssociacao)
         setUserTurma(userData.Turma)
         setUserAdm(userData.Administrador)
-        console.log(DataFinal)
     }
   }
 
   useEffect(() => {
-    readUserData();
-    conversorData();
-  }, [userName])
+    console.log('1');
+    readUserData().then(() => {
+    validaVencimento();
+    });
+  }, [DataFinal])
   
-  
-  useEffect(() => { 
-    //comparaDatas();  
-    conversorData();
-
-  }, [dataVencimento])
   
   const createAlert = () =>
     Alert.alert(
@@ -58,22 +53,15 @@ const HomeScreen = () => {
       ]
   );
   
-  function conversorData(){
+  function validaVencimento(){
     const [day, month, year] = DataFinal.split('/');
     const result = [year, month, day].join('-');
     const data = new Date(result);
-    return data;
-  }
-
-  function comparaDatas(){
-    console.log(dataAtual);
-    if (dataAtual.getTime() > dataVencimento.getTime()){
-      createAlert();
+    if (data.getTime() < dataAtual.getTime()){
       console.log('vencido');
+      createAlert();
     }
   }
-  
-  
 
   const handleSignOut = () => {
     auth
