@@ -1,55 +1,55 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, ImageBackground, Platform, Dimensions, Image  } from 'react-native'
-import React, {useState, useEffect,} from 'react'
-import { auth } from '../../firebase';
-import {createUserWithEmailAndPassword,signInWithEmailAndPassword} from 'firebase/auth'
+import { StyleSheet, Switch, Text, View, SafeAreaView , TextInput, TouchableOpacity, ImageBackground, Platform, Dimensions, Image, ScrollView  } from 'react-native'
+import React, {useState,useEffect,} from 'react'
+import { auth, db } from '../../firebase'
+import {createUserWithEmailAndPassword} from 'firebase/auth'
+import { setDoc, doc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/core'
 
 import ImagemFundo from '../assets/fundo.png'
 import Logo  from '../assets/logomedalfenas.png'
 import MA  from '../assets/MA.png'
-import Mascote01 from '../assets/mascotinho01.png'
 
-const LoginScreen = () => {
+const SignUpScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-
+  const [userName, setUserName] = useState('')
+  const [DataFinal, setUserDataFinal] = useState('')
+  const [userTurma, setUserTurma] = useState('')
+  const [userAdm, setUserAdm] = useState(false);
+  const [usuario,setUsuario] = useState()
   const navigation = useNavigation()
 
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged(user => {
-  //     if (user) {
-  //       navigation.replace("Home")
-  //     }
-  //   })
-
-  //   return unsubscribe
-  // }, [])
 
 
-  const handleSignUp = () => {
-    
-      createUserWithEmailAndPassword(auth,email,password)
+  const handleSignUp = () => { 
+      createUserWithEmailAndPassword(auth, email,password)
       .then((userCredential) => {
         const user = userCredential.user;
+        saveUser(user.uid)
       })
       .catch(error => alert(error.message))
+      navigation.replace("Home");
   }
 
-  const handleLogin = () => {
-      signInWithEmailAndPassword(auth,email, password)
-      .then(userCredentials => {
-        const user = userCredentials.user;
-        navigation.replace("Home");
-      })
-      .catch(error => alert(error.message))
+  async function saveUser(userid){
+    console.log(userid)
+    await setDoc(doc(db, 'users', userid), {
+      Name: userName,
+      DataFinalAssociacao: DataFinal,
+      Turma: userTurma,
+      Administrador: userAdm,
+    }).catch((e) => {  console.log(e); });
   }
+
 
   return (
-    <KeyboardAvoidingView
+    <SafeAreaView
     style={styles.container}
     behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
     <ImageBackground style={styles.imgContainer} source={ImagemFundo}>
+    <ScrollView contentContainerStyle={styles.scrollView}>
+
         <Image
         source={Logo}
         style={styles.logoContainer}
@@ -69,62 +69,85 @@ const LoginScreen = () => {
         value={password}
         onChangeText={value => setPassword(value)}
         style={styles.input}
-        secureTextEntry
         maxLength={8}
+        />
+        <TextInput
+        placeholder="Nome"
+        value={userName}
+        onChangeText={value => setUserName(value)}
+        style={styles.input}
         />  
+        <TextInput
+        placeholder="Turma"
+        value={userTurma}
+        onChangeText={value => setUserTurma(value)}
+        style={styles.input}
+        maxLength={3}
+        /> 
+        <TextInput
+        placeholder="Data de vencimento da associação"
+        value={DataFinal}
+        onChangeText={value => setUserDataFinal(value)}
+        style={styles.input}
+        maxLength={10}
+        /> 
+         
+        <Text style={styles.label}>Administrador</Text>
+        <Switch
+        trackColor={{ false: "#767577", true: "#81b0ff" }}
+        thumbColor={userAdm ? "#f5dd4b" : "#f4f3f4"}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={value => setUserAdm(value)}
+        value={userAdm}
+        style={styles.switch}
+        />    
+
       </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress = {( ) => handleLogin()}
-          style={styles.button}
-          >
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        {/* <TouchableOpacity
           onPress = {() => handleSignUp()}
           style={[styles.button, styles.buttonOutline]}
-          
           > 
           <Text style={styles.buttonOutlineText}>Registrar</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
 
       <View style={styles.bottomContainer}>
       <Image
-        source={Mascote01}
-        style={styles.bottomImg}
-        />
-      <Image
         source={MA}
         style={styles.bottomLogo}
-      />
+        />
       </View>  
 
-    </ImageBackground>  
-    </KeyboardAvoidingView>
+    </ScrollView>
+    </ImageBackground> 
+    </SafeAreaView> 
   )
 }
 
-export default LoginScreen
+export default SignUpScreen
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent:'center',
-    alignItems:'center',
   },
   imgContainer: {
     flex: 1,
     resizeMode: 'cover',
-    justifyContent:'flex-start',
-    alignItems:'center',
     position: 'absolute',
     left: 0,
     top: 0,
     width: Dimensions.get('screen').width,
     height: Dimensions.get('screen').height,
   },
+  scrollView: {
+    height: '100%',
+    width: '100%',
+    justifyContent:'flex-start',
+    alignItems:'center',
+  },
+
   logoContainer:{
     width:'40%',
     height: '20%',
@@ -148,7 +171,6 @@ const styles = StyleSheet.create({
     width:'60%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
   },
   button:{
     width: '100%',
@@ -179,24 +201,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: '50%',
     resizeMode: 'stretch',
-    marginTop: 20,
-    paddingVertical: 10,
-    alignItems:'flex-end',
-    justifyContent: 'flex-start',
+    alignItems:'center',
+    justifyContent: 'center',
   },
   bottomImg:{
     width:'40%',
-    height: '90%',
+    height: '50%',
     resizeMode: 'stretch',
     alignSelf: "flex-start",
     
   },
   bottomLogo:{
     width:'20%',
-    height: '20%',
+    height: '50%',
     resizeMode: 'stretch',
     marginTop: 20,
     marginBottom: 40,
     paddingVertical: 10,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  switch: {
+    alignSelf: 'flex-start',
+  },
+  label: {
+    marginTop: 10,
+    fontSize: 18,
   },
 })

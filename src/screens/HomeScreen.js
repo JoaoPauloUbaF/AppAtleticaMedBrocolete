@@ -147,7 +147,7 @@ const HomeScreen = () => {
    {userAdm ? 
     (<View style={styles.subscribeContainer}>
     <TouchableOpacity
-    onPress = {( ) => handleSignOut()}
+    onPress = {() => navigation.replace("SignUp")}
     style={styles.registerButton}
     >
           <Text style={styles.registerButtonText}>Cadastro</Text>
