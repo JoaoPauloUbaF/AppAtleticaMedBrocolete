@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { getAuth } from "firebase/auth";
-import { initializeApp} from 'firebase/app';
-import { getFirestore,  getDoc, doc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable   } from "firebase/storage";
+import { initializeApp, utils } from 'firebase/app';
+import { getFirestore,  getDoc, doc,  } from 'firebase/firestore';
+import { getStorage, ref, uploadBytesResumable , getDownloadURL  } from "firebase/storage";
 import Logo  from './src/assets/logomedalfenas.png'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -27,4 +27,4 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 
-export { auth, db, getDoc, doc, storage, uploadBytesResumable, ref };
+export { auth, db, getDoc, doc, storage, uploadBytesResumable, ref, utils, getDownloadURL };

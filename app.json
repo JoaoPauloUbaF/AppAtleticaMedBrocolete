@@ -25,11 +25,11 @@
       "userInterfaceStyle": "light",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png"
-      }
+      },
+      "package": "com.rubenscoliseu.AppAtleticaMedBrocolete"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     }
-
   }
 }

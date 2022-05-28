@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/core'
 import React, {useState,useEffect,} from 'react'
 import { StyleSheet, Button, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
-import { auth, getDoc, doc, db, storage, uploadBytesResumable, ref } from '../../firebase'
+import { auth, getDoc, doc, db, storage, uploadBytesResumable, ref, getDownloadURL } from '../../firebase'
 import * as ImagePicker from 'expo-image-picker';
+
 
 import ImagemFundo from '../assets/fundo.png'
 import mascotinho03 from '../assets/mascotinho03.png'
@@ -36,12 +37,11 @@ const HomeScreen = () => {
         setUserDataFinal(userData.DataFinalAssociacao)
         setUserTurma(userData.Turma)
         setUserAdm(userData.Administrador)
-        setUserPhoto()
+        setProfilePhoto();
     }
   }
-
+  
   useEffect(() => {
-    console.log('1');
     readUserData().then(() => {
     validaVencimento();
     });
@@ -58,15 +58,25 @@ const HomeScreen = () => {
 
 
     if (!result.cancelled) {
+      
+      var path = auth.currentUser.uid + '/' + userName.replace(/ /g, "") + '.jpg';
+
+      const img = await fetch(result.uri);
+      const bytes = await img.blob();
       setUserPhoto(result.uri);
-      setUserPhotoUri(result.uri);
-      var path = auth.currentUser.uid + '/' + userName + '.jpg';
-      console.log(path);
-      console.log(result.uri);
       const storageRef = ref(storage, path);
-      const uploadTask = uploadBytesResumable(storageRef, result.uri, metadata);
+      const uploadTask = uploadBytesResumable(storageRef, bytes, metadata);
     }
   };
+  
+  const setProfilePhoto = async () => {
+    var path = auth.currentUser.uid + '/' + userName.replace(/ /g, "") + '.jpg';
+    const storageRef = ref(storage, path);
+    await getDownloadURL(storageRef).then((url)=> {
+      console.log(url);
+      setUserPhoto(url);
+    })
+  }
 
   const createAlert = () =>
     Alert.alert(
@@ -109,8 +119,8 @@ const HomeScreen = () => {
         style={styles.userImg}
       > 
         {!userPhoto ? (
-          <Button title="Carregar Foto" onPress={pickImage}/>
-        ) : <Image source={{ uri: userPhoto }} style={{ width: '100%', height: '100%' }} />}
+          <Button title="Carregar Foto" onPress={pickImage} style={{ width: '100%', height: '100%', borderRadius: 10, }}/>
+        ) : <Image source={{ uri: userPhoto }} style={{ width: '100%', height: '100%', borderRadius: 10, }} />}
 
       </View>
       <Image
