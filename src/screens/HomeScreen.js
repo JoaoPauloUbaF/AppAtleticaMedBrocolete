@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/core'
 import React, {useState,useEffect,} from 'react'
 import { StyleSheet, Button, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
 import { auth, getDoc, doc, db, storage, uploadBytesResumable, ref, getDownloadURL } from '../../firebase'
+import Icon from 'react-native-vector-icons/AntDesign'
 import * as ImagePicker from 'expo-image-picker';
 
 
@@ -18,7 +19,6 @@ const HomeScreen = () => {
   const [DataFinal, setUserDataFinal] = useState()
   const [userTurma, setUserTurma] = useState('')
   const [userAdm, setUserAdm] = useState(false);
-  const [userPhotoUri, setUserPhotoUri] = useState();
   const [userPhoto, setUserPhoto] = useState();
 
   const user = doc(db, 'users/'+ auth.currentUser.uid);
@@ -50,9 +50,8 @@ const HomeScreen = () => {
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
@@ -119,7 +118,12 @@ const HomeScreen = () => {
         style={styles.userImg}
       > 
         {!userPhoto ? (
-          <Button title="Carregar Foto" onPress={pickImage} style={{ width: '100%', height: '100%', borderRadius: 10, }}/>
+          <TouchableOpacity
+          onPress = {( ) => pickImage()}
+          style={styles.buttonCamera}
+          >
+          <Icon name="camera" size={50} style={{alignSelf: 'center'}}/>
+        </TouchableOpacity>
         ) : <Image source={{ uri: userPhoto }} style={{ width: '100%', height: '100%', borderRadius: 10, }} />}
 
       </View>
@@ -233,7 +237,6 @@ const styles = StyleSheet.create({
     width: '35%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
     borderRadius: 10,
   },
   bottomImg:{
@@ -298,11 +301,12 @@ const styles = StyleSheet.create({
     top:0,
   },
   buttonCamera:{
-    width: 50,
-    height: 50,
-    backgroundColor: '#000000',
+    width: 125,
+    height: 125,
+    backgroundColor: '#0782F9',
     padding: 20,
-    borderRadius: 50,
+    borderRadius: 100,
+    justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
     left:0,
