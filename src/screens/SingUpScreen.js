@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, ImageBackground, Platform, Dimensions, Image  } from 'react-native'
-import React, {useState, useEffect,} from 'react'
+import React, {useState,useEffect,} from 'react'
 import { auth } from '../../firebase';
 import {createUserWithEmailAndPassword,signInWithEmailAndPassword} from 'firebase/auth'
 import { useNavigation } from '@react-navigation/core'
@@ -9,11 +9,27 @@ import Logo  from '../assets/logomedalfenas.png'
 import MA  from '../assets/MA.png'
 import Mascote01 from '../assets/mascotinho01.png'
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [userName, setUserName] = useState('')
+  const [DataFinal, setUserDataFinal] = useState('')
+  const [userTurma, setUserTurma] = useState('')
+  const [userAssociado, setUserAssociado] = useState()
+  const [dataVencimento, setDataVencimento] = useState(new Date());
+  const [userAdm, setUserAdm] = useState(false);
 
-  
+  const navigation = useNavigation()
+
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged(user => {
+  //     if (user) {
+  //       navigation.replace("Home")
+  //     }
+  //   })
+
+  //   return unsubscribe
+  // }, [])
 
 
   const handleSignUp = () => {
@@ -29,7 +45,7 @@ const LoginScreen = ({navigation}) => {
       signInWithEmailAndPassword(auth,email, password)
       .then(userCredentials => {
         const user = userCredentials.user;
-        navigation.navigate('Home');
+        navigation.replace("Home");
       })
       .catch(error => alert(error.message))
   }
