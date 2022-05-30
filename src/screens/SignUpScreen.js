@@ -3,20 +3,18 @@ import React, {useState} from 'react'
 import { auth, db } from '../../firebase'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { setDoc, doc } from 'firebase/firestore';
-import { useNavigation } from '@react-navigation/core'
 
 import ImagemFundo from '../assets/fundo.png'
 import Logo  from '../assets/logomedalfenas.png'
 import MA  from '../assets/MA.png'
 
-const SignUpScreen = () => {
+const SignUpScreen = ({navigation}) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [userName, setUserName] = useState('')
   const [DataFinal, setUserDataFinal] = useState('')
   const [userTurma, setUserTurma] = useState('')
   const [userAdm, setUserAdm] = useState(false);
-  const navigation = useNavigation()
 
 
 
@@ -69,6 +67,7 @@ const SignUpScreen = () => {
         onChangeText={value => setPassword(value)}
         style={styles.input}
         maxLength={8}
+        keyboardType= 'numeric'
         />
         <TextInput
         placeholder="Nome"
@@ -228,5 +227,6 @@ const styles = StyleSheet.create({
   label: {
     marginTop: 10,
     fontSize: 18,
+    color: '#FFCC00'
   },
 })

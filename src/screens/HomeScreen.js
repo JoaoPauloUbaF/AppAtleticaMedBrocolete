@@ -1,9 +1,9 @@
-import { useNavigation } from '@react-navigation/core'
 import React, {useState,useEffect,} from 'react'
 import { StyleSheet, Button, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
 import { auth, getDoc, doc, db, storage, uploadBytesResumable, ref, getDownloadURL } from '../../firebase'
 import Icon from 'react-native-vector-icons/AntDesign'
 import * as ImagePicker from 'expo-image-picker';
+import AppLoading from 'expo-app-loading';
 
 
 import ImagemFundo from '../assets/fundo.png'
@@ -14,12 +14,13 @@ import botaoverde from '../assets/botaoverde.png'
 import MA from '../assets/MA.png'
 
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const [userName, setUserName] = useState('')
   const [DataFinal, setUserDataFinal] = useState()
   const [userTurma, setUserTurma] = useState('')
   const [userAdm, setUserAdm] = useState(false);
   const [userPhoto, setUserPhoto] = useState();
+  const [isReady, setIsReady] = useState(true);
 
   const user = doc(db, 'users/'+ auth.currentUser.uid);
   const dataAtual = new Date();
@@ -27,7 +28,6 @@ const HomeScreen = () => {
     contentType: 'image/jpeg'
   };
 
-  const navigation = useNavigation()
 
   async function readUserData(){
     const mySnapshot = await getDoc(user);
@@ -37,8 +37,9 @@ const HomeScreen = () => {
         setUserDataFinal(userData.DataFinalAssociacao)
         setUserTurma(userData.Turma)
         setUserAdm(userData.Administrador)
-        setProfilePhoto();
+        setProfilePhoto(); 
     }
+    
   }
   
   useEffect(() => {
@@ -100,12 +101,20 @@ const HomeScreen = () => {
     auth
       .signOut()
       .then(() => {
-        navigation.replace("Login")
+        navigation.goBack()
       })
       .catch(error => alert(error.message))
   }
 
-
+  if (isReady) {
+    return (
+      <AppLoading
+        startAsync={() => readUserData()}
+        onFinish={() => setIsReady(false)}
+        onError={console.warn}
+      />
+    );
+  }
 
   return (
   <View style={styles.container}>
@@ -190,7 +199,7 @@ const HomeScreen = () => {
    {userAdm ? 
     (<View style={styles.subscribeContainer}>
     <TouchableOpacity
-    onPress = {() => navigation.replace("SignUp")}
+    onPress = {() => navigation.navigate('SignUp')}
     style={styles.registerButton}
     >
           <Text style={styles.registerButtonText}>Cadastro</Text>

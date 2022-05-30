@@ -9,11 +9,11 @@ import Logo  from '../assets/logomedalfenas.png'
 import MA  from '../assets/MA.png'
 import Mascote01 from '../assets/mascotinho01.png'
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const navigation = useNavigation()
+  
 
 
   const handleSignUp = () => {
@@ -29,7 +29,7 @@ const LoginScreen = () => {
       signInWithEmailAndPassword(auth,email, password)
       .then(userCredentials => {
         const user = userCredentials.user;
-        navigation.replace("Home");
+        navigation.navigate('Home');
       })
       .catch(error => alert(error.message))
   }

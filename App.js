@@ -16,7 +16,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar translucent/>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Login">
       <Stack.Screen options={{headerShown: false}} name="Login" component={LoginScreen} />
       <Stack.Screen options={{headerShown: false}} name="Home" component={HomeScreen} />
       <Stack.Screen options={{headerShown: false}} name="SignUp" component={SignUpScreen} />

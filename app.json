@@ -1,7 +1,7 @@
 {
   "expo": {
     "userInterfaceStyle": "automatic",
-    "name": "AppAtleticaMedBrocolete",
+    "name": "Carteirinha Medicina Alfenas",
     "slug": "AppAtleticaMedBrocolete",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "light",
+      "bundleIdentifier": "com.rubenscoliseu.AppAtleticaMedBrocolete"
     },
     "android": {
       "userInterfaceStyle": "light",
