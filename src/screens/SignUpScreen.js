@@ -45,7 +45,7 @@ const SignUpScreen = ({navigation}) => {
     behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
     <ImageBackground style={styles.imgContainer} source={ImagemFundo}>
-    <ScrollView contentContainerStyle={styles.scrollView}>
+    <ScrollView style={[styles.scrollView]} contentContainerStyle={styles.scrollViewChildren}>
 
         <Image
         source={Logo}
@@ -116,8 +116,7 @@ const SignUpScreen = ({navigation}) => {
         source={MA}
         style={styles.bottomLogo}
         />
-      </View>  
-
+      </View>        
     </ScrollView>
     </ImageBackground> 
     </SafeAreaView> 
@@ -131,24 +130,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imgContainer: {
-    flex: 1,
     resizeMode: 'cover',
-    position: 'absolute',
-    left: 0,
-    top: 0,
     width: Dimensions.get('screen').width,
     height: Dimensions.get('screen').height,
   },
   scrollView: {
-    height: '100%',
-    width: '100%',
-    justifyContent:'flex-start',
-    alignItems:'center',
+    flex:1,
+  },
+  scrollViewChildren: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 
   logoContainer:{
-    width:'40%',
-    height: '20%',
+    width:150,
+    height: 150,
     resizeMode: 'stretch',
     marginTop: 100,
     marginBottom: 30,
@@ -156,7 +152,6 @@ const styles = StyleSheet.create({
   },
   inputContainer:{
     width:'80%',
-    
   },
   input:{
     backgroundColor: 'white',
@@ -211,7 +206,7 @@ const styles = StyleSheet.create({
   },
   bottomLogo:{
     width:'20%',
-    height: '50%',
+    height: 100,
     resizeMode: 'stretch',
     marginTop: 20,
     marginBottom: 40,

@@ -1,9 +1,10 @@
 import React, {useState,useEffect,} from 'react'
-import { StyleSheet, Button, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image } from 'react-native'
+import { StyleSheet, ScrollView, Alert, Text, TouchableOpacity, View, ImageBackground, Dimensions, Image, StatusBar } from 'react-native'
 import { auth, getDoc, doc, db, storage, uploadBytesResumable, ref, getDownloadURL } from '../../firebase'
 import Icon from 'react-native-vector-icons/AntDesign'
 import * as ImagePicker from 'expo-image-picker';
 import AppLoading from 'expo-app-loading';
+
 
 
 import ImagemFundo from '../assets/fundo.png'
@@ -12,6 +13,7 @@ import mascotinho04 from '../assets/mascotinho04.png'
 import mascotinho07 from '../assets/mascotinho07.png'
 import botaoverde from '../assets/botaoverde.png'
 import MA from '../assets/MA.png'
+
 
 
 const HomeScreen = ({navigation}) => {
@@ -73,7 +75,6 @@ const HomeScreen = ({navigation}) => {
     var path = auth.currentUser.uid + '/' + userName.replace(/ /g, "") + '.jpg';
     const storageRef = ref(storage, path);
     await getDownloadURL(storageRef).then((url)=> {
-      console.log(url);
       setUserPhoto(url);
     })
   }
@@ -119,6 +120,7 @@ const HomeScreen = ({navigation}) => {
   return (
   <View style={styles.container}>
     <ImageBackground style={styles.imgContainer} source={ImagemFundo}>
+    <ScrollView style={[styles.scrollView]} contentContainerStyle={styles.scrollViewChildren}>
     <View style={styles.topContainer}>
       <View
         style={styles.bottomImg}
@@ -189,25 +191,34 @@ const HomeScreen = ({navigation}) => {
       }]}/>
     </View>
 
-    <View style={styles.logoContainer}>
-      <Image
-          source={MA}
-          style={styles.bottomLogo}
-          />
-    </View> 
+    <View style={styles.bottomContainer}>
 
-   {userAdm ? 
-    (<View style={styles.subscribeContainer}>
-    <TouchableOpacity
-    onPress = {() => navigation.navigate('SignUp')}
-    style={styles.registerButton}
-    >
-          <Text style={styles.registerButtonText}>Cadastro</Text>
-    </TouchableOpacity>
-    </View> ) : null} 
+      
+        <Image
+            source={MA}
+            style={styles.bottomLogo}
+            />
+      
 
- 
+      {userAdm ? 
+        (<View style={styles.subscribeContainer}>
+        <TouchableOpacity
+        onPress = {() => navigation.navigate('SignUp')}
+        style={styles.registerButton}
+        >
+              <Text style={styles.registerButtonText}>Cadastro</Text>
+        </TouchableOpacity>
+        </View> ) : null} 
+    </View>
+
+    </ScrollView>
     </ImageBackground>
+    <View style={styles.sponsorContainerTop}>
+      
+    </View>
+    <View style={[styles.sponsorContainerBottom]}>
+
+    </View>
   </View>
   )
 }
@@ -216,28 +227,26 @@ export default HomeScreen
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    width: '100%',
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   imgContainer: {
-    flex: 1,
     resizeMode: 'cover',
-    justifyContent:'flex-start',
-    alignItems:'center',
-    position: 'absolute',
-    left: 0,
-    top: 0,
     width: Dimensions.get('screen').width,
     height: Dimensions.get('screen').height,
+  },
+  scrollView: {
+    flex:1,
+    marginTop: StatusBar.currentHeight,
+  },
+  scrollViewChildren: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   topContainer:{
     width:'100%',
     flexDirection: 'row',
-    height: '20%',
-    marginTop: '10%',
+    height: 200,
+    marginTop: 150,
     alignItems:'center',
     justifyContent: 'center',
   },
@@ -257,7 +266,7 @@ const styles = StyleSheet.create({
   infoContainer:{
     alignSelf:'flex-start',
     width: '100%',
-    height: '20%',
+    height: 200,
     paddingLeft: 30,
     marginTop:'5%',
   },
@@ -268,7 +277,7 @@ const styles = StyleSheet.create({
   },
   statusContainer:{
     width:'100%',
-    height: '10%',
+    height: 75,
     justifyContent: 'center',
     alignItems:'center',
   },
@@ -289,12 +298,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: "flex-start",
     zIndex: 3, // works on ios
-    //elevation: 3,
   },
   buttonContainer:{
     flexDirection: 'row',
     width:'60%',
-    height: '7%',
+    height: 70,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: "10%",
@@ -337,16 +345,40 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
   },
+  sponsorContainerTop:{
+    position:'absolute',
+    top: ( StatusBar.currentHeight),
+    width: '80%',
+    height: 100,
+    backgroundColor: 'orange', 
+    borderRadius: 25,
+    alignSelf: 'center',
+    marginTop: 20, 
+  },
+  sponsorContainerBottom:{
+    position:'absolute',
+    bottom:0,
+    width: '80%',
+    height: 100,
+    backgroundColor: 'orange', 
+    borderRadius: 25,
+    alignSelf: 'center',
+    marginBottom: 20, 
+  },
+  bottomContainer:{
+    marginBottom: 150, 
+    marginTop: 20, 
+    flexDirection: 'row', 
+    width: '100%',
+    justifyContent: 'center',   
+  },
   logoContainer:{
-    width:'100%',
-    height: '10%',
+    width:  70,
+    height: 70,
     resizeMode: 'stretch',
-    marginTop: '5%',
-    marginBottom: '5%',
     justifyContent: 'center',
     position: 'absolute',
-    left: '0%',
-    bottom: '0%',
+    left: '50%'
   },
   bottomLogo:{
     width: 70,
@@ -355,15 +387,12 @@ const styles = StyleSheet.create({
     alignSelf:'center',
   },
   subscribeContainer:{
-    width:'100%',
-    height: '10%',
+    width:70,
+    height: 70,
     resizeMode: 'stretch',
-    marginTop: '5%',
-    marginBottom: '5%',
     justifyContent: 'center',
     position: 'absolute',
-    left: '75%',
-    bottom: '0%',
+    left: '75%'
   },
   registerButton:{
     width: 70,
