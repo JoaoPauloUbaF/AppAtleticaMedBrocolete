@@ -16,6 +16,7 @@ import MA from '../assets/MA.png'
 
 
 
+
 const HomeScreen = ({navigation}) => {
   const [userName, setUserName] = useState('')
   const [DataFinal, setUserDataFinal] = useState()
@@ -23,7 +24,15 @@ const HomeScreen = ({navigation}) => {
   const [userAdm, setUserAdm] = useState(false);
   const [userPhoto, setUserPhoto] = useState();
   const [isReady, setIsReady] = useState(true);
-
+  const [sponsor1, setSponsor1] = useState();
+  const [sponsor2, setSponsor2]  = useState(); 
+  const [sponsor3, setSponsor3] = useState();
+  const [sponsor4, setSponsor4] = useState();
+  const [sponsor5, setSponsor5] = useState();
+  const [sponsor6, setSponsor6] = useState();
+  const [sponsorTop, setSponsorTop] = useState();
+  const [sponsorBot, setSponsorBot] = useState();
+  
   const user = doc(db, 'users/'+ auth.currentUser.uid);
   const dataAtual = new Date();
   const metadata = {
@@ -39,6 +48,7 @@ const HomeScreen = ({navigation}) => {
         setUserDataFinal(userData.DataFinalAssociacao)
         setUserTurma(userData.Turma)
         setUserAdm(userData.Administrador)
+        setSponsors();
         setProfilePhoto(); 
     }
     
@@ -79,6 +89,52 @@ const HomeScreen = ({navigation}) => {
     })
   }
 
+  const setSponsors = async () => { //Não é a melhor implementação, melhorar no futuro
+    
+    var path1 = 'Parceiros/parceiro1.png';
+    var path2 = 'Parceiros/parceiro2.png';
+    var path3 = 'Parceiros/parceiro3.png';
+    var path4 = 'Parceiros/parceiro4.png';
+    var path5 = 'Parceiros/parceiro5.png';
+    var path6 = 'Parceiros/parceiro6.png';
+    var pathTop = 'Parceiros/sponsorTop.png';
+    var pathBot = 'Parceiros/sponsorBot.png';
+
+    const storageRef1 = ref(storage, path1);
+    await getDownloadURL(storageRef1).then((url)=> {
+      setSponsor1(url);
+    })
+    const storageRef2 = ref(storage, path2);
+    await getDownloadURL(storageRef2).then((url)=> {
+      setSponsor2(url);
+      console.log(sponsor2);
+    })
+    const storageRef3 = ref(storage, path3);
+    await getDownloadURL(storageRef3).then((url)=> {
+      setSponsor3(url);
+    })
+    const storageRef4 = ref(storage, path4);
+    await getDownloadURL(storageRef4).then((url)=> {
+      setSponsor4(url);
+    })
+    const storageRef5 = ref(storage, path5);
+    await getDownloadURL(storageRef5).then((url)=> {
+      setSponsor5(url);
+    })
+    const storageRef6 = ref(storage, path6);
+    await getDownloadURL(storageRef6).then((url)=> {
+      setSponsor6(url);
+    })
+    const storageRef7 = ref(storage, pathTop);
+    await getDownloadURL(storageRef7).then((url)=> {
+      setSponsorTop(url);
+    })
+    const storageRef8 = ref(storage, pathBot);
+    await getDownloadURL(storageRef8).then((url)=> {
+      setSponsorBot(url);
+    })
+  }
+
   const createAlert = () =>
     Alert.alert(
       "Associação vencida",
@@ -110,7 +166,7 @@ const HomeScreen = ({navigation}) => {
   if (isReady) {
     return (
       <AppLoading
-        startAsync={() => readUserData()}
+        startAsync={() => setSponsors()}
         onFinish={() => setIsReady(false)}
         onError={console.warn}
       />
@@ -191,33 +247,64 @@ const HomeScreen = ({navigation}) => {
       }]}/>
     </View>
 
+    <View style={styles.sponsorsContainer}>
+      <View style={styles.sponsorsCollumn}>
+        <Image
+            source={{uri: sponsor1}}
+            style={styles.bottomLogo}
+        />
+         <Image
+            source={{uri: sponsor3}}
+            style={styles.bottomLogo}
+        />
+         <Image
+            source={{uri: sponsor5}}
+            style={styles.bottomLogo}
+        />
+      </View>
+      <View style={styles.sponsorsCollumn}>
+      <Image
+            source={{uri: sponsor2}}
+            style={styles.bottomLogo}
+        />
+         <Image
+            source={{uri: sponsor4}}
+            style={styles.bottomLogo}
+        />
+         <Image
+            source={{uri: sponsor6}}
+            style={styles.bottomLogo}
+        />
+      </View>
+
+    </View>
     <View style={styles.bottomContainer}>
 
-      
         <Image
             source={MA}
             style={styles.bottomLogo}
             />
-      
-
+    
       {userAdm ? 
         (<View style={styles.subscribeContainer}>
         <TouchableOpacity
         onPress = {() => navigation.navigate('SignUp')}
         style={styles.registerButton}
         >
-              <Text style={styles.registerButtonText}>Cadastro</Text>
+              <Text style={styles.registerButtonText}>+</Text>
         </TouchableOpacity>
         </View> ) : null} 
     </View>
 
+    
+
     </ScrollView>
     </ImageBackground>
     <View style={styles.sponsorContainerTop}>
-      
+      <Image source={{uri: sponsorTop}} style={styles.sponsorImg}></Image>
     </View>
     <View style={[styles.sponsorContainerBottom]}>
-
+      <Image source={{uri: sponsorBot}} style={styles.sponsorImg}></Image>
     </View>
   </View>
   )
@@ -246,7 +333,7 @@ const styles = StyleSheet.create({
     width:'100%',
     flexDirection: 'row',
     height: 200,
-    marginTop: 150,
+    marginTop: 125,
     alignItems:'center',
     justifyContent: 'center',
   },
@@ -348,22 +435,32 @@ const styles = StyleSheet.create({
   sponsorContainerTop:{
     position:'absolute',
     top: ( StatusBar.currentHeight),
-    width: '80%',
+    width: '100%',
     height: 100,
-    backgroundColor: 'orange', 
-    borderRadius: 25,
     alignSelf: 'center',
-    marginTop: 20, 
   },
   sponsorContainerBottom:{
     position:'absolute',
     bottom:0,
-    width: '80%',
+    width: '100%',
     height: 100,
-    backgroundColor: 'orange', 
-    borderRadius: 25,
     alignSelf: 'center',
-    marginBottom: 20, 
+  },
+  sponsorImg:{
+    width:'100%',
+    height: '100%',
+    resizeMode: 'stretch'
+  },
+  sponsorsContainer:{
+    flexDirection: 'row', 
+    width: '70%',
+    justifyContent: 'center',
+    marginVertical: 20
+  },
+  sponsorsCollumn:{
+    flexDirection: 'column', 
+    width: '50%',
+    justifyContent: 'center',
   },
   bottomContainer:{
     marginBottom: 150, 
@@ -381,10 +478,11 @@ const styles = StyleSheet.create({
     left: '50%'
   },
   bottomLogo:{
-    width: 70,
-    height: 70,
+    width: 90,
+    height: 90,
     resizeMode: 'stretch',
     alignSelf:'center',
+    marginVertical: 10,
   },
   subscribeContainer:{
     width:70,
@@ -395,20 +493,21 @@ const styles = StyleSheet.create({
     left: '75%'
   },
   registerButton:{
-    width: 70,
-    height: 70,
-    backgroundColor: 'green',
+    width: 90,
+    height: 90,
+    backgroundColor: '#0782F9',
     padding: 10,
     borderRadius: 70,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
+    marginVertical: 20,
     left:0,
     top:0,
   },
   registerButtonText:{
     color:'white',
     fontWeight: '700',
-    fontSize: 12,
+    fontSize: 50,
   },
 })
